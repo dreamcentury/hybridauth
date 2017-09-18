@@ -1,6 +1,6 @@
 {
-    "name": "hybridauth/hybridauth",
-    "description": "Open source social sign on PHP library.",
+    "name": "dreamcentury/hybridauth",
+    "description": "Fork on https://github.com/hybridauth/hybridauth.",
     "keywords": ["hybridauth", "login", "oauth", "social", "openid", "facebook", "google", "twitter", "yahoo"],
     "homepage": "http://hybridauth.sourceforge.net",
     "type": "library",
