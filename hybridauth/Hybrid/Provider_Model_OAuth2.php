@@ -83,6 +83,7 @@ class Hybrid_Provider_Model_OAuth2 extends Hybrid_Provider_Model {
     // If we have an access token, set it
     if ($this->token("access_token")) {
       $this->api->access_token = $this->token("access_token");
+      $this->api->id_token = $this->token("id_token");
       $this->api->refresh_token = $this->token("refresh_token");
       $this->api->access_token_expires_in = $this->token("expires_in");
       $this->api->access_token_expires_at = $this->token("expires_at");
@@ -129,6 +130,7 @@ class Hybrid_Provider_Model_OAuth2 extends Hybrid_Provider_Model {
 
     // store tokens
     $this->token("access_token", $this->api->access_token);
+    $this->token("id_token", $this->api->id_token);
     $this->token("refresh_token", $this->api->refresh_token);
     $this->token("expires_in", $this->api->access_token_expires_in);
     $this->token("expires_at", $this->api->access_token_expires_at);
@@ -161,6 +163,9 @@ class Hybrid_Provider_Model_OAuth2 extends Hybrid_Provider_Model {
           // set new access_token
           $this->api->access_token = $response->access_token;
 
+          if (isset($response->id_token))
+            $this->api->id_token = $response->id_token;
+
           if (isset($response->refresh_token))
             $this->api->refresh_token = $response->refresh_token;
 
@@ -175,6 +180,7 @@ class Hybrid_Provider_Model_OAuth2 extends Hybrid_Provider_Model {
 
       // re store tokens
       $this->token("access_token", $this->api->access_token);
+      $this->token("id_token", $this->api->id_token);
       $this->token("refresh_token", $this->api->refresh_token);
       $this->token("expires_in", $this->api->access_token_expires_in);
       $this->token("expires_at", $this->api->access_token_expires_at);

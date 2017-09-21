@@ -18,6 +18,7 @@ class OAuth2Client
   public $client_secret    = "" ;
   public $redirect_uri     = "" ;
   public $access_token     = "" ;
+  public $id_token         = "" ;
   public $refresh_token    = "" ;
 
   public $access_token_expires_in = "" ;
@@ -85,6 +86,7 @@ class OAuth2Client
     }
 
     if( isset( $response->access_token  ) )  $this->access_token           = $response->access_token;
+    if( isset( $response->id_token      ) )  $this->id_token               = $response->id_token;
     if( isset( $response->refresh_token ) ) $this->refresh_token           = $response->refresh_token;
     if( isset( $response->expires_in    ) ) $this->access_token_expires_in = $response->expires_in;
 
