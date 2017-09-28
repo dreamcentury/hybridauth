@@ -341,9 +341,9 @@ class Hybrid_Providers_Facebook extends Hybrid_Provider_Model {
     function getUserActivity($stream = 'timeline') {
         try {
             if ($stream == "me") {
-                $response = $this->api->get('/me/feed', $this->token('access_token'));
+                $response = $this->api->get('/me/feed?fields=id,created_time,type,link,story,message,from', $this->token('access_token'));
             } else {
-                $response = $this->api->get('/me/home', $this->token('access_token'));
+                $response = $this->api->get('/me/home?fields=id,created_time,type,link,story,message,from', $this->token('access_token'));
             }
             $response = $response->getDecodedBody();
         } catch (FacebookSDKException $e) {
