@@ -5,14 +5,14 @@
 * (c) 2009-2012, HybridAuth authors | http://hybridauth.sourceforge.net/licenses.html 
 */
 
-/** 
+/**
  * PayPal OAuth2 Class
- * 
- * @package             HybridAuth providers package 
+ *
+ * @package             HybridAuth providers package
  * @author              Jan Waś <janek.jan@gmail.com>
  * @version             0.2
  * @license             BSD License
- */ 
+ */
 
 /**
  * Hybrid_Providers_Paypal - PayPal provider adapter based on OAuth2 protocol
@@ -25,9 +25,9 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
     public $sandbox = true;
 
 	/**
-	* IDp wrappers initializer 
+	* IDp wrappers initializer
 	*/
-	function initialize() 
+	function initialize()
 	{
 		if ( ! $this->config["keys"]["id"] || ! $this->config["keys"]["secret"] ){
 			throw new Exception( "Your application id and secret are required in order to connect to {$this->providerId}.", 4 );
@@ -50,7 +50,7 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 			$this->api->access_token            = $this->token( "access_token" );
 			$this->api->refresh_token           = $this->token( "refresh_token" );
 			$this->api->access_token_expires_in = $this->token( "expires_in" );
-			$this->api->access_token_expires_at = $this->token( "expires_at" ); 
+			$this->api->access_token_expires_at = $this->token( "expires_at" );
 		}
 
 		// Set curl proxy if exist
@@ -75,7 +75,7 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 	}
 
 	/**
-	* begin login step 
+	* begin login step
 	*/
 	/*function loginBegin()
 	{
@@ -100,8 +100,7 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 		$this->refreshToken();
 
 		// ask google api for user infos
-		$response = $this->api->api( "https://api".($this->sandbox?'.sandbox' : '').".paypal.com/v1/identity/openidconnect/userinfo/?schema=openid" ); 
-
+		$response = $this->api->api( "https://api".($this->sandbox?'.sandbox' : '').".paypal.com/v1/identity/openidconnect/userinfo/?schema=openid" );
 		if ( ! isset( $response->user_id ) || isset( $response->message ) ){
 			throw new Exception( "User profile request failed! {$this->providerId} returned an invalid response.", 6 );
 		}
@@ -111,11 +110,12 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
 		$this->user->profile->lastName      = (property_exists($response,'family_name'))?$response->family_name:"";
 		$this->user->profile->displayName   = (property_exists($response,'name'))?$response->name:"";
 		$this->user->profile->photoURL      = (property_exists($response,'picture'))?$response->picture:"";
-		$this->user->profile->gender        = (property_exists($response,'gender'))?$response->gender:""; 
+		$this->user->profile->gender        = (property_exists($response,'gender'))?$response->gender:"";
 		$this->user->profile->email         = (property_exists($response,'email'))?$response->email:"";
 		$this->user->profile->emailVerified = (property_exists($response,'email_verified'))?$response->email_verified:"";
 		$this->user->profile->language      = (property_exists($response,'locale'))?$response->locale:"";
 		$this->user->profile->phone         = (property_exists($response,'phone_number'))?$response->phone_number:"";
+		$this->user->profile->job_title     = (property_exists($response,'account_type'))?$response->account_type:"";
         if (property_exists($response,'address')) {
             $address = $response->address;
             $this->user->profile->address   = (property_exists($address,'street_address'))?$address->street_address:"";
@@ -125,13 +125,14 @@ class Hybrid_Providers_Paypal extends Hybrid_Provider_Model_OAuth2
             $this->user->profile->region    = (property_exists($address,'region'))?$address->region:"";
         }
 
-		if( property_exists($response,'birthdate') ){ 
-            if (strpos($response->birthdate, '-') === false) {
-                if ($response->birthdate !== '0000') {
-                    $this->user->profile->birthYear  = (int) $response->birthdate;
+		$birthdate_property = property_exists( $response, 'birthdate' ) ? 'birthdate' : property_exists( $response, 'birthday' ) ? 'birthday' : null;
+		if( isset( $birthdate_property ) && property_exists($response,$birthdate_property) ){
+            if (strpos($response->$birthdate_property, '-') === false) {
+                if ($response->$birthdate_property !== '0000') {
+                    $this->user->profile->birthYear  = (int) $response->$birthdate_property;
                 }
             } else {
-                list($birthday_year, $birthday_month, $birthday_day) = explode( '-', $response->birthdate );
+                list($birthday_year, $birthday_month, $birthday_day) = explode( '-', $response->$birthdate_property );
 
                 $this->user->profile->birthDay   = (int) $birthday_day;
                 $this->user->profile->birthMonth = (int) $birthday_month;
