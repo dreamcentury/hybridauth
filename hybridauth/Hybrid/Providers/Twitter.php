@@ -19,7 +19,7 @@ class Hybrid_Providers_Twitter extends Hybrid_Provider_Model_OAuth1 {
 
 		// Provider api end-points 
 		$this->api->api_base_url = "https://api.twitter.com/1.1/";
-		$this->api->authorize_url = "https://api.twitter.com/oauth/authenticate";
+		$this->api->authorize_url = "https://api.twitter.com/oauth/authorize";
 		$this->api->request_token_url = "https://api.twitter.com/oauth/request_token";
 		$this->api->access_token_url = "https://api.twitter.com/oauth/access_token";
 
@@ -141,6 +141,7 @@ class Hybrid_Providers_Twitter extends Hybrid_Provider_Model_OAuth1 {
 	 */
 	function getUserContacts() {
 		$parameters = array('cursor' => '-1');
+		// Following
 		$response = $this->api->get('friends/ids.json', $parameters);
 
 		// check the last HTTP status code returned
@@ -152,8 +153,32 @@ class Hybrid_Providers_Twitter extends Hybrid_Provider_Model_OAuth1 {
 			return array();
 		}
 
+		/*// 75 id per time should be okey
+		$contactsids = array_chunk($response->ids, 75);*/
+		$reponse_following = $response;
+
+		// Followers
+		$response = $this->api->get('followers/ids.json', $parameters);
+		// check the last HTTP status code returned
+		if ($this->api->http_code != 200) {
+			throw new Exception("User contacts request failed! {$this->providerId} returned an error. " . $this->errorMessageByStatus($this->api->http_code));
+		}
+
+		if (!$response || !count($response->ids)) {
+			return array();
+		}
+
+		// Check if both
+		$validated_ids = array();
+		foreach($reponse_following->ids as $id){
+			if(in_array($id,$response->ids)){
+				$validated_ids[] = $id;
+			}
+		}
+
 		// 75 id per time should be okey
-		$contactsids = array_chunk($response->ids, 75);
+		$contactsids = array_chunk($validated_ids, 75);
+
 
 		$contacts = array();
 

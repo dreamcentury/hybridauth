@@ -181,6 +181,7 @@ class Hybrid_Endpoint {
 		Hybrid_Logger::info("Endpoint: job done. return to callback url.");
 
 		$hauth->returnToCallbackUrl();
+
 		die();
 	}
 

@@ -205,11 +205,11 @@ class Hybrid_Providers_Google extends Hybrid_Provider_Model_OAuth2 {
 		}
 		
 		// Google Gmail and Android contacts
-		if (strpos($this->scope, '/m8/feeds/') !== false) {
+		if (strpos($this->scope, '/m8/feeds') !== false) {
 			
 			$response = $this->api->api("https://www.google.com/m8/feeds/contacts/default/full?"
 					. http_build_query(array_merge(array('alt' => 'json'), $this->config['contacts_param'])));
-			
+
 			if (!$response) {
 				return array();
 			}
@@ -260,26 +260,28 @@ class Hybrid_Providers_Google extends Hybrid_Provider_Model_OAuth2 {
 			
 			$response = $this->api->api("https://www.googleapis.com/plus/v1/people/me/people/visible?"
 					. http_build_query($this->config['contacts_param']));
-			
+
 			if (!$response) {
 				return array();
 			}
-			
-			foreach ($response->items as $idx => $item) {
-				$uc = new Hybrid_User_Contact();
-				$uc->email = (property_exists($item, 'email')) ? $item->email : '';
-				$uc->displayName = (property_exists($item, 'displayName')) ? $item->displayName : '';
-				$uc->identifier = (property_exists($item, 'id')) ? $item->id : '';
-				
-				$uc->description = (property_exists($item, 'objectType')) ? $item->objectType : '';
-				$uc->photoURL = (property_exists($item, 'image')) ? ((property_exists($item->image, 'url')) ? $item->image->url : '') : '';
-				$uc->profileURL = (property_exists($item, 'url')) ? $item->url : '';
-				$uc->webSiteURL = '';
-				
-				$contacts[] = $uc;
+
+			if( isset( $response->items ) ) {
+				foreach ( $response->items as $idx => $item ) {
+					$uc              = new Hybrid_User_Contact();
+					$uc->email       = ( property_exists( $item, 'email' ) ) ? $item->email : '';
+					$uc->displayName = ( property_exists( $item, 'displayName' ) ) ? $item->displayName : '';
+					$uc->identifier  = ( property_exists( $item, 'id' ) ) ? $item->id : '';
+
+					$uc->description = ( property_exists( $item, 'objectType' ) ) ? $item->objectType : '';
+					$uc->photoURL    = ( property_exists( $item, 'image' ) ) ? ( ( property_exists( $item->image, 'url' ) ) ? $item->image->url : '' ) : '';
+					$uc->profileURL  = ( property_exists( $item, 'url' ) ) ? $item->url : '';
+					$uc->webSiteURL  = '';
+
+					$contacts[] = $uc;
+				}
 			}
 		}
-		
+
 		return $contacts;
 	}
 	
