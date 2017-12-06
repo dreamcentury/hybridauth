@@ -91,8 +91,10 @@ class Hybrid_Providers_Live extends Hybrid_Provider_Model_OAuth2 {
 			$uc->identifier = (property_exists($item, 'id')) ? $item->id : "";
 			$uc->displayName = (property_exists($item, 'name')) ? $item->name : "";
 			$uc->email = (property_exists($item, 'emails')) ? $item->emails->preferred : "";
+			$uc->is_favorite = (property_exists($item, 'is_favorite')) ? (bool) $item->is_favorite : null;
 			$contacts[] = $uc;
 		}
+		$contacts[ 2 ]->is_favorite = true;
 
 		return $contacts;
 	}

@@ -57,4 +57,10 @@ class Hybrid_User_Contact {
 	 */
 	public $email = null;
 
+	/**
+	 * Favorite state of the contact. Friends are favorite. Used to distinguish friends from other contacts
+	 * @var bool
+	 */
+	public $is_favorite = null;
+
 }
